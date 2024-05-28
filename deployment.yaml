@@ -1,0 +1,34 @@
+# ********************************** Service customers  instance *********************************
+  - name: msd-gateway-ms
+    type: compute.v1.instance
+    properties:
+      zone: us-central1-a
+      machineType: https://www.googleapis.com/compute/v1/projects/microservicesbankandes/zones/us-central1-a/machineTypes/e2-micro
+      disks:
+      - deviceName: boot
+        type: PERSISTENT
+        boot: true
+        autoDelete: true
+        initializeParams:
+          sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
+      networkInterfaces:
+      - network: https://www.googleapis.com/compute/v1/projects/microservicesbankandes/global/networks/default
+        networkIP: 10.128.0.86
+        accessConfigs:
+        - name: External NAT
+          type: ONE_TO_ONE_NAT
+      tags:
+        items: 
+        - msd-services-firewall
+      metadata:
+        items:
+        - key: startup-script
+          value: |
+            #!/bin/bash
+            sudo apt-get update
+            sudo apt install python3-pip -y
+            sudo mkdir /home/labs
+            cd /home/labs
+            sudo git clone https://github.com/DannyC666/BankGateway.git
+            cd BankGateway
+            sudo pip3 install -r requirements.txt
